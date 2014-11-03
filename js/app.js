@@ -1,11 +1,10 @@
-
 $(document).ready(function(){
     var tiles = []; /* creating the basic tile array */
     var idx;
-    for (idx = 1; idx <= 32; ++idx) {
+    for (idx = 3; idx <= 122; ++idx) {
         tiles.push({
             tileNum: idx,
-            src: 'img/tile' + idx + '.jpg'
+            src: 'img/tile' + idx + '.png'
         });
     }
 
@@ -46,18 +45,18 @@ $(document).ready(function(){
     gameBoard.append(row);
 
     $('#game-board img').click(function() { /* need further elaboration */
-       var img = $(this);
-       var tile = img.data('tile');
-       img.fadeOut(100, function() { /* need to add a second function */
-           if (tile.flipped) {
-               img.attr('src', 'img/tile-back.png');
-           }
-           else {
-               img.attr('src', tile.src);
-           }
-           tile.flipped = !tile.flipped;
-           img.fadeIn(100);
-       }); // after fadeOut
+        var img = $(this);
+        var tile = img.data('tile');
+        img.fadeOut(100, function() { /* need to add a second function */
+            if (tile.flipped) {
+                img.attr('src', 'img/tile-back.png');
+            }
+            else {
+                img.attr('src', tile.src);
+            }
+            tile.flipped = !tile.flipped;
+            img.fadeIn(100);
+        }); // after fadeOut
     }); // on click of gameboard images
 
     var startTime = _.now();
