@@ -1,6 +1,9 @@
 $(document).ready(function() {
     var tileSound = document.getElementById('tile-flip');
     var ringSound = document.getElementById('ring');
+    var themeSound = document.getElementById('theme');
+
+    themeSound.play();
 
 
     var startTime = _.now();
@@ -35,10 +38,14 @@ $(document).ready(function() {
     var $prevTile = null; // if null, no tiles have been flipped. If not null, one tile has been flipped
 
     $('#game-board img').click(function() { /* clicks a tile */
-        tileSound.play();
-        var $currTile = $(this);
+        //img.addClass('switch'); // need to add class
 
-        if (!$currTile.hasClass('flipped') && !$currTile.flipped) { // not clicking on same tile twice
+        tileSound.play();
+        var $currTile = $(this); // this is the img that got clicked
+        // var currTile = $currTile.data('tile'); // this is the tile object associated w/ the image that got clicked
+
+        if (!$currTile.data('tile').flipped) { // not clicking on same tile twice
+
             console.log('Did not click on the same thing 2x');
             flipTile($currTile);
 
@@ -49,7 +56,7 @@ $(document).ready(function() {
 
                     setTimeout(function() {
                         ringSound.play();
-                    }, 500);
+                    }, 750);
 
                     matches++;
                     remaining--;
@@ -104,6 +111,7 @@ $(document).ready(function() {
                 alt: 'image of tile ' + tile.tileNum
             });
             img.data('tile', tile);
+            img.addClass('');
             row.append(img);
         });
         gameBoard.append(row);
@@ -167,5 +175,5 @@ $(document).ready(function() {
 2. Start new game
 3. Celebration if game is over
 4. CSS Button Creator ok?
-5. Is flipped status stored in .data of object or just object.flipped? 
+5. Is flipped status stored in .data of object or just object.flipped?
 n */
