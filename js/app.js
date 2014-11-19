@@ -1,10 +1,13 @@
 $(document).ready(function() {
-    var tileSound = document.getElementById('tile-flip');
-    var ringSound = document.getElementById('ring');
-    var themeSound = document.getElementById('theme');
+    //var tileSound = document.getElementById('tile-flip');
+    //var ringSound = document.getElementById('ring');
+    //var themeSound = document.getElementById('theme');
 
-    themeSound.play();
+    //themeSound.play();
 
+    function createGame() {
+
+    }
 
     var startTime = _.now();
     var tiles = createTileSet();
@@ -18,7 +21,7 @@ $(document).ready(function() {
     displayTimer(startTime);
     initiateBoard();
 
-    $('#new-game').click(function() {
+    $('#newGameButton').click(function() {
         console.log("hi");
         startTime = _.now();
         tiles = createTileSet();
@@ -90,7 +93,6 @@ $(document).ready(function() {
         } else {
             console.log('clicked on the same thing twice');
         }
-
     });
 
     function initiateBoard() {
@@ -115,7 +117,7 @@ $(document).ready(function() {
             row.append(img);
         });
         gameBoard.append(row);
-    }
+    } // end initiateBoard
 
     function createTileSet() {
         var tiles = []; /* creating the basic tile array */
@@ -126,9 +128,8 @@ $(document).ready(function() {
                 src: 'img/tile' + idx + '.png'
             });
         }
-
         return tiles;
-    }
+    } // end createTileSet
 
     function cloneTiles (tiles) {
         var shuffledTiles = _.shuffle(tiles);
@@ -141,7 +142,7 @@ $(document).ready(function() {
         });
 
         return tilePairs;
-    }
+    } // end cloneTiles
 
     function displayTimer(startTime) {
         var timer = window.setInterval(function () {
@@ -152,7 +153,7 @@ $(document).ready(function() {
              window.clearInterval(timer);
              } */
         }, 1000);
-    }
+    } // end displayTimer
 
     function flipTile(img) {
         var tile = img.data('tile');
@@ -166,8 +167,11 @@ $(document).ready(function() {
             tile.flipped = !tile.flipped;
             img.fadeIn(100);
         });
+    } // end flipTile
 
-    }
+
+
+
 }); //jQuery Ready Function
 
 /* need to create function
