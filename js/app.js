@@ -1,42 +1,35 @@
 $(document).ready(function() {
-    //var tileSound = document.getElementById('tile-flip');
-    //var ringSound = document.getElementById('ring');
-    //var themeSound = document.getElementById('theme');
+    var tileSound = document.getElementById('tile-flip');
+    var ringSound = document.getElementById('ring');
+    var themeSound = document.getElementById('theme');
 
-    //themeSound.play();
+    var missed;
+    var matches;
+    var remaining;
+    themeSound.play();
 
     function createGame() {
-
-    }
-
-    var startTime = _.now();
-    var tiles = createTileSet();
-    var tilePairs = cloneTiles(tiles);
-    tilePairs = _.shuffle(tilePairs);
-
-    var missed = 0;
-    var matches = 0;
-    var remaining = 8;
-
-    displayTimer(startTime);
-    initiateBoard();
-
-    $('#newGameButton').click(function() {
-        console.log("hi");
-        startTime = _.now();
-        tiles = createTileSet();
-        tilePairs = cloneTiles(tiles);
+        $('#game-board').empty();
+        var tiles = createTileSet();
+        var tilePairs = cloneTiles(tiles);
         tilePairs = _.shuffle(tilePairs);
+        initiateBoard(tilePairs);
         missed = 0;
         matches = 0;
         remaining = 8;
-        displayTimer(startTime);
-        initiateBoard();
+        displayTimer();
+
+        $('#successful-matches span').text(matches);
+        $('#matches-left span').text(remaining);
+        $('#missed-attempts span').text(missed);
+    }
+
+    createGame();
+
+    $('#new-game').click(function() {
+        createGame();
     });
 
-    $('#successful-matches span').text(matches);
-    $('#matches-left span').text(remaining);
-    $('#missed-attempts span').text(missed);
 
     var $prevTile = null; // if null, no tiles have been flipped. If not null, one tile has been flipped
 
@@ -95,7 +88,7 @@ $(document).ready(function() {
         }
     });
 
-    function initiateBoard() {
+    function initiateBoard(tilePairs) {
         var gameBoard = $('#game-board');
         var row = $(document.createElement('div'));
 
@@ -144,7 +137,9 @@ $(document).ready(function() {
         return tilePairs;
     } // end cloneTiles
 
-    function displayTimer(startTime) {
+    function displayTimer() {
+        var startTime = _.now();
+        clearTimeout(startTime);
         var timer = window.setInterval(function () {
             var elapsedSeconds = Math.floor((_.now() - startTime) / 1000);
             /* math floor rounds interval */
