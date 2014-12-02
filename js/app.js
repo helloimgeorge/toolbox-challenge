@@ -6,6 +6,7 @@ $(document).ready(function() {
     var missed;
     var matches;
     var remaining;
+    var activeCards = 0;
     themeSound.play();
 
     function createGame() {
@@ -26,68 +27,76 @@ $(document).ready(function() {
 
     createGame();
 
+
     $('#new-game').click(function() {
         createGame();
     });
 
+    $('#canvas').click(function() {
+        $('#canvas').css('visibility', 'hidden');
+    });
 
     var $prevTile = null; // if null, no tiles have been flipped. If not null, one tile has been flipped
 
     $('#game-board img').click(function() { /* clicks a tile */
         //img.addClass('switch'); // need to add class
+        if (activeCards < 2) {
+            tileSound.play();
+            var $currTile = $(this); // this is the img that got clicked
+            // var currTile = $currTile.data('tile'); // this is the tile object associated w/ the image that got clicked
 
-        tileSound.play();
-        var $currTile = $(this); // this is the img that got clicked
-        // var currTile = $currTile.data('tile'); // this is the tile object associated w/ the image that got clicked
+            if (!$currTile.data('tile').flipped) { // not clicking on same tile twice
 
-        if (!$currTile.data('tile').flipped) { // not clicking on same tile twice
+                console.log('Did not click on the same thing 2x');
+                flipTile($currTile);
 
-            console.log('Did not click on the same thing 2x');
-            flipTile($currTile);
+                if ($prevTile != null) { // if previously tile is flipped, do a comparison
 
-            if ($prevTile != null) { // if previously tile is flipped, do a comparison
+                    if ($currTile.data('tile').src === $prevTile.data('tile').src) { // if matched
+                        console.log("Comparing Matched Pair");
+                        activeCards = 0;
+                        setTimeout(function () {
+                            ringSound.play();
+                        }, 750);
 
-                if ($currTile.data('tile').src === $prevTile.data('tile').src) { // if matched
-                    console.log("Comparing Matched Pair");
+                        matches++;
+                        remaining--;
 
-                    setTimeout(function() {
-                        ringSound.play();
-                    }, 750);
+                        $('#successful-matches span').text(matches);
+                        $('#matches-left span').text(remaining);
 
-                    matches++;
-                    remaining--;
+                        $currTile.addClass('flipped');
+                        $prevTile.addClass('flipped');
 
-                    $('#successful-matches span').text(matches);
-                    $('#matches-left span').text(remaining);
-
-                    $currTile.addClass('flipped');
-                    $prevTile.addClass('flipped');
-
-                    $prevTile = null;
-
-                } else { // they don't match
-                    missed++;
-                    $('#missed-attempts span').text(missed);
-                    setTimeout(function() {
-                        flipTile($currTile);
-                        flipTile($prevTile);
-
-                        console.log('flip both back to backtile');
-                        console.log('your tiles dont match');
                         $prevTile = null;
-                    }, 1000);
-                }
-            } else { // no tile is flipped, designate this tile to previous tile
-                console.log("No tile is flipped");
-                $prevTile = $currTile;
 
-            } // on click of gameboard images
 
-        } else {
-            console.log('clicked on the same thing twice');
+                    } else { // they don't match
+                        missed++;
+                        $('#missed-attempts span').text(missed);
+                        setTimeout(function () {
+                            flipTile($currTile);
+                            flipTile($prevTile);
+                            activeCards = 0;
+                            console.log('flip both back to backtile');
+                            console.log('your tiles dont match');
+                            $prevTile = null;
+                        }, 1000);
+                    }
+                } else { // no tile is flipped, designate this tile to previous tile
+                    console.log("No tile is flipped");
+                    $prevTile = $currTile;
+
+                } // on click of gameboard images
+
+            } else {
+                console.log('clicked on the same thing twice');
+            }
         }
     });
 
+
+    // initiates the board
     function initiateBoard(tilePairs) {
         var gameBoard = $('#game-board');
         var row = $(document.createElement('div'));
@@ -124,6 +133,7 @@ $(document).ready(function() {
         return tiles;
     } // end createTileSet
 
+    // clone the initial set of tiles
     function cloneTiles (tiles) {
         var shuffledTiles = _.shuffle(tiles);
         var selectedTiles = shuffledTiles.slice(0,8); /* non-inclusive so that's why 8 instead of 7 */
@@ -137,6 +147,7 @@ $(document).ready(function() {
         return tilePairs;
     } // end cloneTiles
 
+    // displays the timer
     function displayTimer() {
         var startTime = _.now();
         clearTimeout(startTime);
@@ -150,7 +161,9 @@ $(document).ready(function() {
         }, 1000);
     } // end displayTimer
 
+    // flips a tile over
     function flipTile(img) {
+        activeCards++;
         var tile = img.data('tile');
         img.fadeOut(150, function() { /* need to add a second function */
             if (tile.flipped) {
