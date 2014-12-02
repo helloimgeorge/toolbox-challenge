@@ -7,6 +7,7 @@ $(document).ready(function() {
     var matches;
     var remaining;
     var activeCards = 0;
+    var timer;
     themeSound.play();
 
     function createGame() {
@@ -27,9 +28,8 @@ $(document).ready(function() {
 
     createGame();
 
-
-
-    $('#new-game').click(function() {
+    $('#new-game').click(function(e) {
+        e.preventDefault(); // prevent pound sign inclusion in url
         createGame();
     });
 
@@ -39,12 +39,11 @@ $(document).ready(function() {
 
     var $prevTile = null; // if null, no tiles have been flipped. If not null, one tile has been flipped
 
-
-    $('#game-board').on('click', 'img', function() {
+    $(document).on('click', '#game-board img', function() {
         if (activeCards < 2) {
+            tileSound.load();
             tileSound.play();
             var $currTile = $(this); // this is the img that got clicked
-            // var currTile = $currTile.data('tile'); // this is the tile object associated w/ the image that got clicked
 
             if (!$currTile.data('tile').flipped) { // not clicking on same tile twice
 
@@ -54,18 +53,16 @@ $(document).ready(function() {
                 if ($prevTile != null) { // if previously tile is flipped, do a comparison
 
                     if ($currTile.data('tile').src === $prevTile.data('tile').src) { // if matched
-                        console.log("Comparing Matched Pair");
-
+                        //console.log("Comparing Matched Pair");
 
                         activeCards = 0;
                         setTimeout(function () {
+                            ringSound.load();
                             ringSound.play();
                         }, 750);
 
                         matches++;
-                        console.log("Remaining before " + remaining);
                         remaining--;
-                        console.log("Remaining after " + remaining);
 
                         if (remaining == 0) {
                             $('#canvas').css('visibility', 'visible');
@@ -79,7 +76,6 @@ $(document).ready(function() {
 
                         $prevTile = null;
 
-
                     } else { // they don't match
                         missed++;
                         $('#missed-attempts span').text(missed);
@@ -87,8 +83,8 @@ $(document).ready(function() {
                             flipTile($currTile);
                             flipTile($prevTile);
                             activeCards = 0;
-                            console.log('flip both back to backtile');
-                            console.log('your tiles dont match');
+                            //console.log('flip both back to backtile');
+                            //console.log('your tiles dont match');
                             $prevTile = null;
                         }, 1000);
                     }
@@ -103,7 +99,6 @@ $(document).ready(function() {
             }
         }
     });
-
 
     // initiates the board
     function initiateBoard(tilePairs) {
@@ -158,18 +153,19 @@ $(document).ready(function() {
         return tilePairs;
     } // end cloneTiles
 
-    var timer = null;
-
-    // displays the timer
+    //start and run a timer; also update score
     function displayTimer() {
-        var startTime = 0;
-        timer = window.setInterval(function () {
-//            var elapsedSeconds = Math.floor((_.now() - startTime) / 1000);
-            /* math floor rounds interval */
-            startTime++;
-            $('#elapsed-seconds span').text(startTime);
+        window.clearInterval(timer);
+        $('#elapsedSeconds').text('Time: ' + 0 + ' seconds');
+
+        var startTime = _.now();
+
+        //increment timer, also updates score which is dependant on time
+        timer = window.setInterval(function() {
+            var elapsedSeconds = Math.floor((_.now() - startTime) / 1000);
+            $('#elapsed-seconds span').text(elapsedSeconds);
         }, 1000);
-    } // end displayTimer
+    }
 
     // flips a tile over
     function flipTile(img) {
@@ -186,16 +182,4 @@ $(document).ready(function() {
             img.fadeIn(100);
         });
     } // end flipTile
-
-
-
-
 }); //jQuery Ready Function
-
-/* need to create function
-1. How to save information into click method so that it knows not to flip same thing over .flipped
-2. Start new game
-3. Celebration if game is over
-4. CSS Button Creator ok?
-5. Is flipped status stored in .data of object or just object.flipped?
-n */
