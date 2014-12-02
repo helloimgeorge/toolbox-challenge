@@ -10,7 +10,6 @@ $(document).ready(function() {
     themeSound.play();
 
     function createGame() {
-        $('#game-board').empty();
         var tiles = createTileSet();
         var tilePairs = cloneTiles(tiles);
         tilePairs = _.shuffle(tilePairs);
@@ -18,6 +17,7 @@ $(document).ready(function() {
         missed = 0;
         matches = 0;
         remaining = 8;
+        activeCards = 0;
         displayTimer();
 
         $('#successful-matches span').text(matches);
@@ -26,6 +26,7 @@ $(document).ready(function() {
     }
 
     createGame();
+
 
 
     $('#new-game').click(function() {
@@ -38,8 +39,8 @@ $(document).ready(function() {
 
     var $prevTile = null; // if null, no tiles have been flipped. If not null, one tile has been flipped
 
-    $('#game-board img').click(function() { /* clicks a tile */
-        //img.addClass('switch'); // need to add class
+
+    $('#game-board').on('click', 'img', function() {
         if (activeCards < 2) {
             tileSound.play();
             var $currTile = $(this); // this is the img that got clicked
@@ -54,13 +55,21 @@ $(document).ready(function() {
 
                     if ($currTile.data('tile').src === $prevTile.data('tile').src) { // if matched
                         console.log("Comparing Matched Pair");
+
+
                         activeCards = 0;
                         setTimeout(function () {
                             ringSound.play();
                         }, 750);
 
                         matches++;
+                        console.log("Remaining before " + remaining);
                         remaining--;
+                        console.log("Remaining after " + remaining);
+
+                        if (remaining == 0) {
+                            $('#canvas').css('visibility', 'visible');
+                        }
 
                         $('#successful-matches span').text(matches);
                         $('#matches-left span').text(remaining);
@@ -99,6 +108,8 @@ $(document).ready(function() {
     // initiates the board
     function initiateBoard(tilePairs) {
         var gameBoard = $('#game-board');
+        gameBoard.html("");
+
         var row = $(document.createElement('div'));
 
         var img;
@@ -147,17 +158,16 @@ $(document).ready(function() {
         return tilePairs;
     } // end cloneTiles
 
+    var timer = null;
+
     // displays the timer
     function displayTimer() {
-        var startTime = _.now();
-        clearTimeout(startTime);
-        var timer = window.setInterval(function () {
-            var elapsedSeconds = Math.floor((_.now() - startTime) / 1000);
+        var startTime = 0;
+        timer = window.setInterval(function () {
+//            var elapsedSeconds = Math.floor((_.now() - startTime) / 1000);
             /* math floor rounds interval */
-            $('#elapsed-seconds span').text(elapsedSeconds);
-            /* if (elapsedSeconds >= 500) {
-             window.clearInterval(timer);
-             } */
+            startTime++;
+            $('#elapsed-seconds span').text(startTime);
         }, 1000);
     } // end displayTimer
 
